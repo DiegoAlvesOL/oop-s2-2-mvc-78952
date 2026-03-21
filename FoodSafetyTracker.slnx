@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="FoodSafetyTracker.Application/FoodSafetyTracker.Application.csproj" />
+  <Project Path="FoodSafetyTracker.Data/FoodSafetyTracker.Data.csproj" />
+  <Project Path="FoodSafetyTracker.Domain/FoodSafetyTracker.Domain.csproj" />
+  <Project Path="FoodSafetyTracker.Tests/FoodSafetyTracker.Tests.csproj" />
+  <Project Path="FoodSafetyTracker.Web/FoodSafetyTracker.Web.csproj" />
+</Solution>
