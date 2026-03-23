@@ -39,6 +39,6 @@ public class Inspection
     /// Navigation property — lista de todos os acompanhamentos gerados por esta inspeção.
     /// O EF Core usa esta propriedade para montar o JOIN entre Inspection e FollowUp.
     /// </summary>
-    // public ICollection<FollowUp> FollowUps { get; set; } = new List<FollowUp>();
+    public ICollection<FollowUp> FollowUps { get; set; } = new List<FollowUp>();
     
 }
