@@ -49,4 +49,5 @@ public class DbContextTests
         Assert.NotNull(savedPremises);
         Assert.Equal("Test Restaurant", savedPremises.Name);
     }
+    
 }
