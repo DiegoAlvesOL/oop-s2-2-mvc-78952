@@ -60,6 +60,9 @@ try
 
     // Registra o IdentitySeeder para ser injetado via Dependency Injection
     builder.Services.AddScoped<IdentitySeeder>();
+    builder.Services.AddScoped<PremisesSeeder>();
+    builder.Services.AddScoped<InspectionSeeder>();
+    builder.Services.AddScoped<FollowUpSeeder>();
     
     // Registra os Services da camada Application
     builder.Services.AddScoped<IPremisesService, PremisesService>();
@@ -79,6 +82,15 @@ try
     {
         var identitySeeder = serviceScope.ServiceProvider.GetRequiredService<IdentitySeeder>();
         await identitySeeder.SeedAsync();
+        
+        var premisesSeeder = serviceScope.ServiceProvider.GetRequiredService<PremisesSeeder>();
+        await premisesSeeder.SeedAsync();
+
+        var inspectionSeeder = serviceScope.ServiceProvider.GetRequiredService<InspectionSeeder>();
+        await inspectionSeeder.SeedAsync();
+
+        var followUpSeeder = serviceScope.ServiceProvider.GetRequiredService<FollowUpSeeder>();
+        await followUpSeeder.SeedAsync();
     }
 
     // Configura o pipeline de requisições HTTP
