@@ -6,13 +6,11 @@
 /// </summary>
 using FoodSafetyTracker.Data;
 using FoodSafetyTracker.Data.Seeders;
+using FoodSafetyTracker.Web.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-// Configura o Serilog lendo as definições do appsettings.json
-// Isso deve acontecer antes de qualquer outra coisa para capturar
-// erros que ocorram durante a inicialização da aplicação
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(new ConfigurationBuilder()
         .AddJsonFile("appsettings.json")
@@ -26,9 +24,13 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     // Substitui o sistema de logging padrão do ASP.NET Core pelo Serilog
-    // Todo código que usa ILogger passa a usar o Serilog automaticamente
-    builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
-        loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
+    // O UserNameEnricher recebe o IServiceProvider para resolver
+    // o IHttpContextAccessor de forma segura a cada requisição
+    builder.Host.UseSerilog((hostingContext, services, loggerConfiguration) =>
+        loggerConfiguration
+            .ReadFrom.Configuration(hostingContext.Configuration)
+            .ReadFrom.Services(services)
+            .Enrich.With(new UserNameEnricher(services)));
 
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -48,6 +50,10 @@ try
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders()
         .AddDefaultUI();
+
+    // Registra o IHttpContextAccessor para o UserNameEnricher
+    // poder acessar o contexto HTTP e ler o usuário logado
+    builder.Services.AddHttpContextAccessor();
 
     // Registra o IdentitySeeder para ser injetado via Dependency Injection
     builder.Services.AddScoped<IdentitySeeder>();
@@ -88,12 +94,9 @@ try
 }
 catch (Exception exception)
 {
-    // Captura erros fatais durante a inicialização da aplicação
-    // como falha de conexão com o banco ou configuração inválida
     Log.Fatal(exception, "FoodSafetyTracker application terminated unexpectedly");
 }
 finally
 {
-    // Garante que todos os logs pendentes são gravados antes de encerrar
     Log.CloseAndFlush();
 }
