@@ -65,6 +65,8 @@ try
     builder.Services.AddScoped<IPremisesService, PremisesService>();
     builder.Services.AddScoped<IInspectionService, InspectionService>();
     builder.Services.AddScoped<IFollowUpService, FollowUpService>();
+    builder.Services.AddScoped<IDashboardService, DashboardService>();
+
 
     // Registra os serviços do MVC e das páginas Razor do Identity
     builder.Services.AddControllersWithViews();
