@@ -4,6 +4,9 @@
 /// middlewares e dependências da aplicação.
 /// A ordem de registro dos middlewares é importante e não deve ser alterada.
 /// </summary>
+
+using FoodSafetyTracker.Application.Interfaces;
+using FoodSafetyTracker.Application.Services;
 using FoodSafetyTracker.Data;
 using FoodSafetyTracker.Data.Seeders;
 using FoodSafetyTracker.Web.Logging;
@@ -57,6 +60,10 @@ try
 
     // Registra o IdentitySeeder para ser injetado via Dependency Injection
     builder.Services.AddScoped<IdentitySeeder>();
+    
+    // Registra os Services da camada Application
+    builder.Services.AddScoped<IPremisesService, PremisesService>();
+    builder.Services.AddScoped<IInspectionService, InspectionService>();
 
     // Registra os serviços do MVC e das páginas Razor do Identity
     builder.Services.AddControllersWithViews();

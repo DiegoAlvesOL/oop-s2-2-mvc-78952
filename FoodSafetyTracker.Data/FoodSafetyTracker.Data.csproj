@@ -2,7 +2,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\FoodSafetyTracker.Domain\FoodSafetyTracker.Domain.csproj" />
-    <ProjectReference Include="..\FoodSafetyTracker.Application\FoodSafetyTracker.Application.csproj" />
   </ItemGroup>
   
   <ItemGroup>
