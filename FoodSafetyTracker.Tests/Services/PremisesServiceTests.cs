@@ -5,7 +5,8 @@ using FoodSafetyTracker.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace FoodSafetyTracker.Tests.Domain;
+namespace FoodSafetyTracker.Tests.Services;
+
 /// <summary>
 /// Testa o comportamento do PremisesService usando banco em memória.
 /// Verifica que as operações de criação e busca funcionam corretamente.

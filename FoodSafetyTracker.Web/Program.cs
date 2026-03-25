@@ -64,6 +64,7 @@ try
     // Registra os Services da camada Application
     builder.Services.AddScoped<IPremisesService, PremisesService>();
     builder.Services.AddScoped<IInspectionService, InspectionService>();
+    builder.Services.AddScoped<IFollowUpService, FollowUpService>();
 
     // Registra os serviços do MVC e das páginas Razor do Identity
     builder.Services.AddControllersWithViews();
