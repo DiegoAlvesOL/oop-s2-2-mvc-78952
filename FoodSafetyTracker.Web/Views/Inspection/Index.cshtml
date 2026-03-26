@@ -1,0 +1,51 @@
+@model List<FoodSafetyTracker.Domain.Entities.Inspection>
+@using FoodSafetyTracker.Domain.Enums
+
+@{
+    ViewData["Title"] = "Inspections";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Inspections</h2>
+    @if (User.IsInRole("Admin") || User.IsInRole("Inspector"))
+    {
+        <a asp-action="Create" class="btn btn-primary">+ New Inspection</a>
+    }
+</div>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+    <tr>
+        <th>Premises</th>
+        <th>Date</th>
+        <th>Score</th>
+        <th>Outcome</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var inspection in Model)
+    {
+        <tr>
+            <td>@inspection.Premises?.Name</td>
+            <td>@inspection.InspectionDate.ToString("dd/MM/yyyy")</td>
+            <td>@inspection.Score</td>
+            <td>
+                @{
+                    var badgeClass = inspection.Outcome == InspectionOutcome.Pass
+                        ? "badge bg-success"
+                        : "badge bg-danger";
+                }
+                <span class="@badgeClass">@inspection.Outcome</span>
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@inspection.Id" class="btn btn-sm btn-info">Details</a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@inspection.Id" class="btn btn-sm btn-warning">Edit</a>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

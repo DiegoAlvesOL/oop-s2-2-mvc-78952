@@ -1,0 +1,48 @@
+@model FoodSafetyTracker.Domain.Entities.Inspection
+@using FoodSafetyTracker.Domain.Enums
+
+@{
+    ViewData["Title"] = "Inspection Details";
+}
+
+<h2>Inspection Details</h2>
+
+<div class="card col-md-6">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">Premises</dt>
+            <dd class="col-sm-8">@Model.Premises?.Name</dd>
+
+            <dt class="col-sm-4">Date</dt>
+            <dd class="col-sm-8">@Model.InspectionDate.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-4">Score</dt>
+            <dd class="col-sm-8">@Model.Score / 100</dd>
+
+            <dt class="col-sm-4">Outcome</dt>
+            <dd class="col-sm-8">
+                @{
+                    var badgeClass = Model.Outcome == InspectionOutcome.Pass
+                        ? "badge bg-success"
+                        : "badge bg-danger";
+                }
+                <span class="@badgeClass">@Model.Outcome</span>
+            </dd>
+
+            <dt class="col-sm-4">Notes</dt>
+            <dd class="col-sm-8">@(Model.Notes ?? "—")</dd>
+        </dl>
+
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+        }
+
+        @if (User.IsInRole("Admin") || User.IsInRole("Inspector"))
+        {
+            <a asp-controller="FollowUp" asp-action="Create" asp-route-inspectionId="@Model.Id"
+               class="btn btn-primary">+ Add Follow-Up</a>
+        }
+    </div>
+</div>
