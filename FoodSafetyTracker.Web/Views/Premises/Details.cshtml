@@ -1,0 +1,43 @@
+@model FoodSafetyTracker.Domain.Entities.Premises
+@using FoodSafetyTracker.Domain.Enums
+
+@{
+    ViewData["Title"] = "Premises Details";
+}
+
+<h2>Premises Details</h2>
+
+<div class="card col-md-6">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">Name</dt>
+            <dd class="col-sm-8">@Model.Name</dd>
+
+            <dt class="col-sm-4">Street</dt>
+            <dd class="col-sm-8">@Model.StreetName</dd>
+
+            <dt class="col-sm-4">City</dt>
+            <dd class="col-sm-8">@Model.City</dd>
+
+            <dt class="col-sm-4">Risk Rating</dt>
+            <dd class="col-sm-8">
+                @{
+                    var badgeClass = Model.RiskRating switch
+                    {
+                        RiskRating.High => "badge bg-danger",
+                        RiskRating.Medium => "badge bg-warning text-dark",
+                        RiskRating.Low => "badge bg-success",
+                        _ => "badge bg-secondary"
+                    };
+                }
+                <span class="@badgeClass">@Model.RiskRating</span>
+            </dd>
+        </dl>
+
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+        }
+    </div>
+</div>

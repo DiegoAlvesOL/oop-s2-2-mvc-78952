@@ -1,0 +1,60 @@
+@model List<FoodSafetyTracker.Domain.Entities.Premises>
+@using FoodSafetyTracker.Domain.Enums
+
+@{
+    ViewData["Title"] = "Premises";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Premises</h2>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary">+ New Premises</a>
+    }
+</div>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Street</th>
+            <th>City</th>
+            <th>Risk Rating</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var premises in Model)
+        {
+            <tr>
+                <td>@premises.Name</td>
+                <td>@premises.StreetName</td>
+                <td>@premises.City</td>
+                <td>
+                    @{
+                        var badgeClass = premises.RiskRating switch
+                        {
+                            RiskRating.High => "badge bg-danger",
+                            RiskRating.Medium => "badge bg-warning text-dark",
+                            RiskRating.Low => "badge bg-success",
+                            _ => "badge bg-secondary"
+                        };
+                    }
+                    <span class="@badgeClass">@premises.RiskRating</span>
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@premises.Id" class="btn btn-sm btn-info">Details</a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@premises.Id" class="btn btn-sm btn-warning">Edit</a>
+                        <form asp-action="Delete" asp-route-id="@premises.Id" method="post" class="d-inline"
+                              onsubmit="return confirm('Are you sure you want to delete this premises?')">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
