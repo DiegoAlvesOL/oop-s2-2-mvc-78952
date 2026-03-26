@@ -1,0 +1,33 @@
+@model FoodSafetyTracker.Application.ViewModels.User.UserFormViewModel
+
+@{
+    ViewData["Title"] = "Delete User";
+}
+
+<h2>Delete User</h2>
+
+<div class="alert alert-danger">
+    Are you sure you want to delete this user? This action cannot be undone.
+</div>
+
+<div class="card col-md-6">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">Username</dt>
+            <dd class="col-sm-8">@Model.UserName</dd>
+
+            <dt class="col-sm-4">Email</dt>
+            <dd class="col-sm-8">@Model.Email</dd>
+
+            <dt class="col-sm-4">Role</dt>
+            <dd class="col-sm-8">@Model.Role</dd>
+        </dl>
+
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+            <button type="submit" class="btn btn-danger">Confirm Delete</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
