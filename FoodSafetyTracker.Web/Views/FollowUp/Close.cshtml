@@ -1,0 +1,47 @@
+@model FoodSafetyTracker.Application.ViewModels.FollowUp.FollowUpFormViewModel
+
+@{
+    ViewData["Title"] = "Close Follow-Up";
+}
+
+<h2>Close Follow-Up</h2>
+
+<div class="row">
+    <div class="col-md-6">
+
+        @* Contexto da inspeção — somente leitura *@
+        <div class="card mb-3 bg-light">
+            <div class="card-body">
+                <p class="mb-1"><strong>Premises:</strong> @Model.PremisesName</p>
+                <p class="mb-1">
+                    <strong>Inspection Date:</strong>
+                    @Model.InspectionDate.ToString("dd/MM/yyyy")
+                </p>
+                <p class="mb-0">
+                    <strong>Due Date:</strong>
+                    @Model.DueDate.ToString("dd/MM/yyyy")
+                </p>
+            </div>
+        </div>
+
+        <form asp-action="Close" asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="InspectionId" type="hidden" />
+
+            <div class="mb-3">
+                <label asp-for="ClosedDate" class="form-label"></label>
+                <input asp-for="ClosedDate" type="date" class="form-control" />
+                <span asp-validation-for="ClosedDate" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success">Confirm Close</button>
+            <a asp-action="Index" asp-route-inspectionId="@Model.InspectionId"
+               class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

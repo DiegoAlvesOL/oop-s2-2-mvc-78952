@@ -1,3 +1,11 @@
+/// <summary>
+/// Implementa as operações de negócio relacionadas aos acompanhamentos.
+/// Responsável por criar e fechar acompanhamentos aplicando as regras de negócio.
+/// Regra principal: DueDate não pode ser anterior à InspectionDate.
+/// Acessa o banco via ApplicationDbContext e loga eventos importantes.
+/// Implementa: IFollowUpService.
+/// Chamado por: FollowUpController no projeto Web.
+/// </summary>
 using FoodSafetyTracker.Application.Interfaces;
 using FoodSafetyTracker.Data;
 using FoodSafetyTracker.Domain.Entities;
@@ -7,14 +15,6 @@ using Microsoft.Extensions.Logging;
 
 namespace FoodSafetyTracker.Application.Services;
 
-/// <summary>
-/// Implementa as operações de negócio relacionadas aos acompanhamentos.
-/// Responsável por criar e fechar acompanhamentos aplicando as regras de negócio.
-/// Regra principal: DueDate não pode ser anterior à InspectionDate.
-/// Acessa o banco via ApplicationDbContext e loga eventos importantes.
-/// Implementa: IFollowUpService.
-/// Chamado por: FollowUpController no projeto Web.
-/// </summary>
 public class FollowUpService : IFollowUpService
 {
     private readonly ApplicationDbContext _dbContext;
@@ -27,6 +27,20 @@ public class FollowUpService : IFollowUpService
     {
         _dbContext = dbContext;
         _logger = logger;
+    }
+
+    /// <summary>
+    /// Retorna todos os acompanhamentos do sistema ordenados por DueDate.
+    /// Inclui os dados da inspeção e do estabelecimento para exibição na lista.
+    /// </summary>
+    public async Task<List<FollowUp>> GetAllFollowUpsAsync()
+    {
+        return await _dbContext.FollowUps
+            .AsNoTracking()
+            .Include(followUp => followUp.Inspection)
+            .ThenInclude(inspection => inspection.Premises)
+            .OrderBy(followUp => followUp.DueDate)
+            .ToListAsync();
     }
 
     /// <summary>
@@ -44,6 +58,19 @@ public class FollowUpService : IFollowUpService
     }
 
     /// <summary>
+    /// Retorna um acompanhamento pelo Id incluindo os dados da inspeção relacionada.
+    /// Retorna null se não encontrar.
+    /// </summary>
+    public async Task<FollowUp?> GetFollowUpByIdAsync(int followUpId)
+    {
+        return await _dbContext.FollowUps
+            .AsNoTracking()
+            .Include(followUp => followUp.Inspection)
+            .ThenInclude(inspection => inspection.Premises)
+            .FirstOrDefaultAsync(followUp => followUp.Id == followUpId);
+    }
+
+    /// <summary>
     /// Cria um novo acompanhamento aplicando a regra de negócio do DueDate.
     /// Loga Warning e lança InvalidOperationException se DueDate
     /// for anterior à InspectionDate da inspeção relacionada.
@@ -51,7 +78,6 @@ public class FollowUpService : IFollowUpService
     /// </summary>
     public async Task CreateFollowUpAsync(FollowUp followUp)
     {
-        // Busca a inspeção relacionada para validar o DueDate
         var relatedInspection = await _dbContext.Inspections
             .FirstOrDefaultAsync(inspection => inspection.Id == followUp.InspectionId);
 
@@ -61,7 +87,6 @@ public class FollowUpService : IFollowUpService
                 $"Inspection {followUp.InspectionId} not found.");
         }
 
-        // Regra de negócio: DueDate não pode ser anterior à InspectionDate
         if (followUp.DueDate < relatedInspection.InspectionDate)
         {
             _logger.LogWarning(

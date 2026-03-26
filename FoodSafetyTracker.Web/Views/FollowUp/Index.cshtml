@@ -1,0 +1,63 @@
+@model List<FoodSafetyTracker.Domain.Entities.FollowUp>
+@using FoodSafetyTracker.Domain.Enums
+
+@{
+    ViewData["Title"] = "Follow-Ups";
+}
+
+<h2>All Follow-Ups</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No follow-ups found.</div>
+}
+else
+{
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Premises</th>
+                <th>Inspection Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Closed Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var followUp in Model)
+            {
+                var isOverdue = followUp.DueDate < DateTime.Today
+                                && followUp.Status == FollowUpStatus.Open;
+                <tr class="@(isOverdue ? "table-danger" : "")">
+                    <td>@followUp.Inspection?.Premises?.Name</td>
+                    <td>@followUp.Inspection?.InspectionDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @followUp.DueDate.ToString("dd/MM/yyyy")
+                        @if (isOverdue)
+                        {
+                            <span class="badge bg-danger ms-1">Overdue</span>
+                        }
+                    </td>
+                    <td>
+                        @{
+                            var badgeClass = followUp.Status == FollowUpStatus.Open
+                                ? "badge bg-warning text-dark"
+                                : "badge bg-success";
+                        }
+                        <span class="@badgeClass">@followUp.Status</span>
+                    </td>
+                    <td>@(followUp.ClosedDate?.ToString("dd/MM/yyyy") ?? "—")</td>
+                    <td>
+                        @if (followUp.Status == FollowUpStatus.Open
+                             && (User.IsInRole("Admin") || User.IsInRole("Inspector")))
+                        {
+                            <a asp-action="Close" asp-route-id="@followUp.Id"
+                               class="btn btn-sm btn-success">Close</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

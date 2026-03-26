@@ -1,0 +1,59 @@
+@model FoodSafetyTracker.Application.ViewModels.FollowUp.FollowUpFormViewModel
+
+@{
+    ViewData["Title"] = "Create Follow-Up";
+}
+
+<h2>Create Follow-Up</h2>
+
+<div class="row">
+    <div class="col-md-6">
+
+        @* Contexto da inspeção — somente leitura *@
+        <div class="card mb-3 bg-light">
+            <div class="card-body">
+                <p class="mb-1"><strong>Premises:</strong> @Model.PremisesName</p>
+                <p class="mb-0">
+                    <strong>Inspection Date:</strong>
+                    @Model.InspectionDate.ToString("dd/MM/yyyy")
+                </p>
+            </div>
+        </div>
+
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <input asp-for="InspectionId" type="hidden" />
+            <input asp-for="InspectionDate" type="hidden" />
+            <input asp-for="PremisesName" type="hidden" />
+
+            @* Exibe erros de regra de negócio *@
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values
+                        .SelectMany(modelState => modelState.Errors))
+                    {
+                        <p class="mb-0">@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <div class="mb-3">
+                <label asp-for="DueDate" class="form-label"></label>
+                <input asp-for="DueDate" type="date" class="form-control" />
+                <span asp-validation-for="DueDate" class="text-danger"></span>
+                <small class="text-muted">
+                    Must be on or after @Model.InspectionDate.ToString("dd/MM/yyyy")
+                </small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Follow-Up</button>
+            <a asp-action="Index" asp-route-inspectionId="@Model.InspectionId"
+               class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,79 @@
+@model List<FoodSafetyTracker.Domain.Entities.FollowUp>
+@using FoodSafetyTracker.Domain.Enums
+
+@{
+    ViewData["Title"] = "Follow-Ups";
+    var inspection = ViewBag.Inspection as FoodSafetyTracker.Domain.Entities.Inspection;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2>Follow-Ups</h2>
+        @if (inspection != null)
+        {
+            <p class="text-muted">
+                Inspection at <strong>@inspection.Premises?.Name</strong>
+                on <strong>@inspection.InspectionDate.ToString("dd/MM/yyyy")</strong>
+            </p>
+        }
+    </div>
+    @if (User.IsInRole("Admin") || User.IsInRole("Inspector"))
+    {
+        <a asp-action="Create" asp-route-inspectionId="@inspection?.Id"
+           class="btn btn-primary">+ New Follow-Up</a>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No follow-ups found for this inspection.</div>
+}
+else
+{
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Closed Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var followUp in Model)
+            {
+                var isOverdue = followUp.DueDate < DateTime.Today
+                                && followUp.Status == FollowUpStatus.Open;
+                <tr class="@(isOverdue ? "table-danger" : "")">
+                    <td>
+                        @followUp.DueDate.ToString("dd/MM/yyyy")
+                        @if (isOverdue)
+                        {
+                            <span class="badge bg-danger ms-1">Overdue</span>
+                        }
+                    </td>
+                    <td>
+                        @{
+                            var badgeClass = followUp.Status == FollowUpStatus.Open
+                                ? "badge bg-warning text-dark"
+                                : "badge bg-success";
+                        }
+                        <span class="@badgeClass">@followUp.Status</span>
+                    </td>
+                    <td>@(followUp.ClosedDate?.ToString("dd/MM/yyyy") ?? "—")</td>
+                    <td>
+                        @if (followUp.Status == FollowUpStatus.Open
+                             && (User.IsInRole("Admin") || User.IsInRole("Inspector")))
+                        {
+                            <a asp-action="Close" asp-route-id="@followUp.Id"
+                               class="btn btn-sm btn-success">Close</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a asp-controller="Inspection" asp-action="Details"
+   asp-route-id="@inspection?.Id" class="btn btn-secondary mt-2">Back to Inspection</a>
