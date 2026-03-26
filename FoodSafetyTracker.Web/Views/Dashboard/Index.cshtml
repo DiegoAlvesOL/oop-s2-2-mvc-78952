@@ -1,0 +1,82 @@
+@model FoodSafetyTracker.Application.ViewModels.Dashboard.DashboardViewModel
+@using FoodSafetyTracker.Domain.Enums
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2>Dashboard</h2>
+
+@* Formulário de filtros *@
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Filter by City</label>
+                <select name="cityFilter" class="form-select">
+                    <option value="">-- All Cities --</option>
+                    @foreach (var city in Model.AvailableCities)
+                    {
+                        <option value="@city" selected="@(Model.CityFilter == city)">@city</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Filter by Risk Rating</label>
+                <select name="riskRatingFilter" class="form-select">
+                    <option value="">-- All Risk Ratings --</option>
+                    @foreach (RiskRating rating in Enum.GetValues(typeof(RiskRating)))
+                    {
+                        <option value="@((int)rating)" selected="@(Model.RiskRatingFilter == rating)">@rating</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                <a asp-action="Index" class="btn btn-secondary w-100 mt-1">Clear Filters</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* Quadrantes de contagem *@
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary h-100">
+            <div class="card-body text-center">
+                <h1 class="display-4 fw-bold">@Model.InspectionsThisMonth</h1>
+                <p class="card-text fs-5">Inspections This Month</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-danger h-100">
+            <div class="card-body text-center">
+                <h1 class="display-4 fw-bold">@Model.FailedInspectionsThisMonth</h1>
+                <p class="card-text fs-5">Failed Inspections This Month</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-warning h-100">
+            <div class="card-body text-center">
+                <h1 class="display-4 fw-bold">@Model.OverdueFollowUps</h1>
+                <p class="card-text fs-5">Overdue Follow-Ups</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Links rápidos *@
+<div class="row mt-4">
+    <div class="col-12">
+        <a asp-controller="Inspection" asp-action="Index" class="btn btn-outline-primary me-2">
+            View All Inspections
+        </a>
+        <a asp-controller="FollowUp" asp-action="Index" class="btn btn-outline-warning">
+            View All Follow-Ups
+        </a>
+    </div>
+</div>
